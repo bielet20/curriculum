@@ -261,9 +261,22 @@
     </div>
     <!-- Fin del contenido principal -->
 
+    <!-- Supabase SDK (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    
     <!-- EmailJS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script src="config-email.js"></script>
     <script src="script.js"></script>
+    
+    <!-- Inicializar Supabase después de cargar todo -->
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            if (typeof initSupabase === 'function') {
+                window.supabaseClient = initSupabase();
+            }
+        });
+    </script>
 </body>
 </html>

@@ -218,7 +218,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 emailInput.value = '';
                 
                 // Guardar solicitud de forma ENCRIPTADA
-                saveAccessRequestEncrypted(enteredEmail, magicLink);
+                // Si Supabase está configurado, guarda allí, sino en LocalStorage
+                if (typeof saveAccessRequestToSupabase === 'function' && supabaseClient) {
+                    await saveAccessRequestToSupabase(enteredEmail, magicLink);
+                } else {
+                    saveAccessRequestEncrypted(enteredEmail, magicLink);
+                }
                 
             } catch (error) {
                 loginError.style.display = 'block';
