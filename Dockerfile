@@ -17,9 +17,9 @@ COPY styles-auth.css /usr/share/nginx/html/
 COPY script.js /usr/share/nginx/html/
 COPY config-email.js /usr/share/nginx/html/
 
-# Copiar archivos multimedia (si existen)
-COPY perfil.jpg /usr/share/nginx/html/ 2>/dev/null || true
-COPY perfil.mp4 /usr/share/nginx/html/ 2>/dev/null || true
+# Copiar archivos multimedia
+COPY perfil.jpg /usr/share/nginx/html/
+COPY perfil.mp4 /usr/share/nginx/html/
 
 # Copiar configuración de nginx ANTES de establecer permisos
 COPY nginx.conf /etc/nginx/conf.d/default.conf
