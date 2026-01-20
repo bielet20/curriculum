@@ -25,7 +25,8 @@ const SUPABASE_CONFIG = {
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InprYmdxc3NlYmR3Y3BocmZ3bHNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg5MjM1MTgsImV4cCI6MjA4NDQ5OTUxOH0.WFH4f3RhPdsdbylX1irM1hx9M2MfLUDrh8oETY7dDxQ',
     
     // Habilitar Supabase (true) o usar LocalStorage (false)
-    enabled: true
+    // TEMPORALMENTE DESHABILITADO - Se habilitará después del redeploy en Coolify
+    enabled: false
 };
 
 // Cliente de Supabase (se inicializa automáticamente)
