@@ -297,13 +297,20 @@ async function sendMagicLinkEmail(userEmail, magicLink) {
 }
 
 // Guardar solicitudes de acceso ENCRIPTADAS
-function saveAccessRequestEncrypted(email, magicLink) {
+async function saveAccessRequestEncrypted(email, magicLink) {
     try {
+        const timestamp = new Date().toISOString();
+        const timestampES = new Date().toLocaleString('es-ES', {
+            timeZone: 'Europe/Madrid',
+            dateStyle: 'full',
+            timeStyle: 'medium'
+        });
+        
         // Encriptar datos sensibles
         const encryptedData = encryptData({
             email: email,
             magicLink: magicLink,
-            timestamp: new Date().toISOString(),
+            timestamp: timestamp,
             status: 'sent',
             ip: 'hidden', // No capturamos IP por privacidad
             userAgent: navigator.userAgent.substring(0, 50) // Solo primeros 50 chars
@@ -318,8 +325,43 @@ function saveAccessRequestEncrypted(email, magicLink) {
         }
         
         localStorage.setItem('access_requests_enc', JSON.stringify(requests));
+        
+        // 📧 ENVIAR NOTIFICACIÓN AL PROPIETARIO con datos de LocalStorage
+        await sendLocalStorageNotification(email, magicLink, timestampES, requests.length);
+        
+        console.log('✅ Datos guardados en LocalStorage y notificación enviada');
     } catch (error) {
         console.error('Error al guardar solicitud encriptada:', error);
+    }
+}
+
+// 📧 Enviar notificación al propietario sobre solicitudes en LocalStorage
+async function sendLocalStorageNotification(email, magicLink, timestamp, totalRequests) {
+    if (typeof emailjs === 'undefined' || !EMAIL_CONFIG || EMAIL_CONFIG.publicKey === 'TU_PUBLIC_KEY_AQUI') {
+        console.warn('EmailJS no configurado. No se puede enviar notificación.');
+        return;
+    }
+    
+    try {
+        const templateParams = {
+            to_email: EMAIL_CONFIG.toEmail, // Tu email
+            subject: '🔔 Nueva solicitud de acceso (LocalStorage)',
+            message: `Nueva solicitud de acceso al curriculum:\n\n📧 Email solicitante: ${email}\n📅 Fecha: ${timestamp}\n🔗 Enlace generado: ${magicLink}\n\n📊 Total de solicitudes registradas: ${totalRequests}\n💾 Almacenamiento: LocalStorage (encriptado)\n\n---\nEsta solicitud se guardó en LocalStorage porque Supabase está temporalmente deshabilitado.`,
+            user_email: email,
+            timestamp: timestamp,
+            link: magicLink,
+            total_requests: totalRequests
+        };
+        
+        await emailjs.send(
+            EMAIL_CONFIG.serviceId,
+            EMAIL_CONFIG.templateId, // Usa el mismo template o crea uno nuevo
+            templateParams
+        );
+        
+        console.log('✅ Notificación de LocalStorage enviada a:', EMAIL_CONFIG.toEmail);
+    } catch (error) {
+        console.error('❌ Error al enviar notificación de LocalStorage:', error);
     }
 }
 
