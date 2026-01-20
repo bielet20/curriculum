@@ -19,13 +19,13 @@
 
 const SUPABASE_CONFIG = {
     // URL de tu proyecto Supabase
-    url: 'https://TU_PROYECTO.supabase.co',
+    url: 'https://zkbgqssebdwcphrfwlsa.supabase.co',
     
     // Anon/Public Key (es seguro exponerla en el frontend)
-    anonKey: 'TU_ANON_KEY_AQUI',
+    anonKey: 'sb_publishable_9_1YeV_dHAk6SlThNgek_Q_WJZrSL4Z',
     
     // Habilitar Supabase (true) o usar LocalStorage (false)
-    enabled: false
+    enabled: true
 };
 
 // Cliente de Supabase (se inicializa automáticamente)
