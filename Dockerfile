@@ -16,6 +16,7 @@ COPY styles.css /usr/share/nginx/html/
 COPY styles-auth.css /usr/share/nginx/html/
 COPY script.js /usr/share/nginx/html/
 COPY config-email.js /usr/share/nginx/html/
+COPY supabase-config.js /usr/share/nginx/html/
 
 # Copiar archivos multimedia
 COPY perfil.jpg /usr/share/nginx/html/
