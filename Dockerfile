@@ -4,7 +4,7 @@ FROM nginx:alpine
 # Etiquetas de metadata
 LABEL maintainer="Gabriel Rivero Sampol <bielrivero@gmail.com>"
 LABEL description="Curriculum web interactivo con autenticación por email"
-LABEL version="2.1"
+LABEL version="2.2"
 
 # Limpiar configuración y archivos por defecto de nginx
 RUN rm -rf /usr/share/nginx/html/* && \
