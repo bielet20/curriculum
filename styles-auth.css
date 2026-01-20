@@ -1,0 +1,298 @@
+/* ========================================
+   ESTILOS PARA SISTEMA DE AUTENTICACIÓN
+   ======================================== */
+
+/* Pantalla de Login */
+.login-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    animation: fadeIn 0.5s ease;
+}
+
+.login-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    padding: 50px 40px;
+    max-width: 450px;
+    width: 90%;
+    animation: slideInUp 0.6s ease;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.login-lock-icon {
+    font-size: 4rem;
+    color: #667eea;
+    margin-bottom: 20px;
+    animation: bounce 1s ease infinite;
+}
+
+.login-header h1 {
+    font-size: 2rem;
+    color: #1e293b;
+    margin-bottom: 10px;
+}
+
+.login-header p {
+    color: #64748b;
+    font-size: 1rem;
+}
+
+/* Formulario de Login */
+.login-form {
+    margin-bottom: 30px;
+}
+
+.password-input-group {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.password-input-group i:first-child {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #667eea;
+    font-size: 1.2rem;
+}
+
+.password-input-group input {
+    width: 100%;
+    padding: 15px 15px 15px 50px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.password-input-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.3s ease;
+}
+
+.toggle-password:hover {
+    color: #667eea;
+}
+
+.toggle-password i {
+    font-size: 1.1rem;
+}
+
+/* Botón de Login */
+.btn-login {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-login:active {
+    transform: translateY(0);
+}
+
+/* Mensajes de Error/Éxito */
+.login-error {
+    margin-top: 20px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.login-error.error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.login-error.success {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+}
+
+.login-error i {
+    margin-right: 8px;
+}
+
+/* Footer del Login */
+.login-footer {
+    text-align: center;
+    padding-top: 30px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.login-footer p {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.login-footer code {
+    background: #f1f5f9;
+    padding: 4px 8px;
+    border-radius: 5px;
+    color: #667eea;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+}
+
+.login-hint {
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+.login-footer i {
+    color: #667eea;
+}
+
+/* Botón de Cerrar Sesión */
+.logout-button {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 998;
+}
+
+.btn-logout {
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background: rgba(239, 68, 68, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-logout i {
+    font-size: 1rem;
+}
+
+/* Animación Shake para input incorrecto */
+.shake {
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+    20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+/* Animación Bounce para icono */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Animación FadeIn */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Animación SlideInUp */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .login-container {
+        padding: 40px 30px;
+    }
+
+    .login-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .login-lock-icon {
+        font-size: 3rem;
+    }
+
+    .logout-button {
+        top: 10px;
+        right: 10px;
+    }
+
+    .btn-logout {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Ocultar contenido principal cuando está en login */
+.main-content {
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards;
+}

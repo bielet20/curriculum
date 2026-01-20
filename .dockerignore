@@ -1,0 +1,26 @@
+# Archivos de documentación
+README.md
+README-PROTEGIDO.md
+
+# Archivos de git
+.git
+.gitignore
+
+# Archivos de desarrollo
+node_modules
+*.log
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de configuración local
+.env
+.env.local
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Versión sin protección (opcional, si no quieres incluirla)
+index.html
