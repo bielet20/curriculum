@@ -275,6 +275,9 @@ async function sendMagicLinkEmail(userEmail, magicLink) {
         timestamp: timestamp
     };
     
+    console.log('📧 Enviando email a:', userEmail);
+    console.log('📋 Parámetros:', { ...templateParams, message: '[mensaje largo...]' });
+    
     try {
         // Enviar con EmailJS
         const response = await emailjs.send(
@@ -283,6 +286,7 @@ async function sendMagicLinkEmail(userEmail, magicLink) {
             templateParams
         );
         console.log('✅ Email enviado correctamente:', response);
+        console.log('✉️ El usuario', userEmail, 'debería recibir el email en breve');
         return response;
     } catch (error) {
         console.error('❌ Error al enviar email:', error);
