@@ -13,8 +13,9 @@ const AUTH_CONFIG = {
     // Nombre de la cookie/storage
     sessionKey: 'curriculum_auth_token',
     
-    // Clave secreta para generar tokens (cámbiala por una única)
-    secretKey: 'curriculum_secret_2026_grs'
+    // Clave secreta para generar tokens (CÁMBIALA por algo único y seguro)
+    // Genera una nueva con: Math.random().toString(36).substring(2) + Date.now().toString(36)
+    secretKey: 'grs_' + btoa('curriculum_2026_gabriel_rivero').replace(/=/g, '').substring(0, 32)
 };
 
 // Verificar autenticación al cargar la página
@@ -197,8 +198,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Generar enlace mágico
                 const magicLink = generateMagicLink(enteredEmail);
                 
-                // Enviar email con el enlace
+                // Enviar email con el enlace al solicitante
                 await sendMagicLinkEmail(enteredEmail, magicLink);
+                
+                // 🔔 NOTIFICAR AL PROPIETARIO de la nueva solicitud
+                await notifyOwnerNewRequest(enteredEmail);
                 
                 // Mostrar mensaje de éxito
                 loginError.style.display = 'block';
@@ -213,8 +217,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Limpiar formulario
                 emailInput.value = '';
                 
-                // Guardar solicitud localmente
-                saveAccessRequest(enteredEmail, magicLink);
+                // Guardar solicitud de forma ENCRIPTADA
+                saveAccessRequestEncrypted(enteredEmail, magicLink);
                 
             } catch (error) {
                 loginError.style.display = 'block';
@@ -283,16 +287,108 @@ async function sendMagicLinkEmail(userEmail, magicLink) {
     }
 }
 
-// Guardar solicitudes de acceso
-function saveAccessRequest(email, magicLink) {
-    let requests = JSON.parse(localStorage.getItem('access_requests') || '[]');
-    requests.push({
-        email: email,
-        magicLink: magicLink,
-        timestamp: new Date().toISOString(),
-        status: 'sent'
+// Guardar solicitudes de acceso ENCRIPTADAS
+function saveAccessRequestEncrypted(email, magicLink) {
+    try {
+        // Encriptar datos sensibles
+        const encryptedData = encryptData({
+            email: email,
+            magicLink: magicLink,
+            timestamp: new Date().toISOString(),
+            status: 'sent',
+            ip: 'hidden', // No capturamos IP por privacidad
+            userAgent: navigator.userAgent.substring(0, 50) // Solo primeros 50 chars
+        });
+        
+        let requests = JSON.parse(localStorage.getItem('access_requests_enc') || '[]');
+        requests.push(encryptedData);
+        
+        // Limitar a últimas 100 solicitudes
+        if (requests.length > 100) {
+            requests = requests.slice(-100);
+        }
+        
+        localStorage.setItem('access_requests_enc', JSON.stringify(requests));
+    } catch (error) {
+        console.error('Error al guardar solicitud encriptada:', error);
+    }
+}
+
+// Función simple de encriptación (XOR con clave)
+function encryptData(data) {
+    const key = AUTH_CONFIG.secretKey;
+    const jsonStr = JSON.stringify(data);
+    let encrypted = '';
+    
+    for (let i = 0; i < jsonStr.length; i++) {
+        encrypted += String.fromCharCode(
+            jsonStr.charCodeAt(i) ^ key.charCodeAt(i % key.length)
+        );
+    }
+    
+    return btoa(encrypted); // Base64 encode
+}
+
+// Función para desencriptar (solo para el owner)
+function decryptData(encryptedData) {
+    try {
+        const key = AUTH_CONFIG.secretKey;
+        const decoded = atob(encryptedData);
+        let decrypted = '';
+        
+        for (let i = 0; i < decoded.length; i++) {
+            decrypted += String.fromCharCode(
+                decoded.charCodeAt(i) ^ key.charCodeAt(i % key.length)
+            );
+        }
+        
+        return JSON.parse(decrypted);
+    } catch (error) {
+        console.error('Error al desencriptar:', error);
+        return null;
+    }
+}
+
+// Notificar al propietario de nueva solicitud
+async function notifyOwnerNewRequest(userEmail) {
+    const timestamp = new Date().toLocaleString('es-ES', { 
+        timeZone: 'Europe/Madrid',
+        dateStyle: 'full',
+        timeStyle: 'short'
     });
-    localStorage.setItem('access_requests', JSON.stringify(requests));
+    
+    // Verificar si EmailJS está configurado
+    if (typeof emailjs === 'undefined' || !EMAIL_CONFIG || EMAIL_CONFIG.publicKey === 'TU_PUBLIC_KEY_AQUI') {
+        console.log('📧 Notificación al owner (EmailJS no configurado):', userEmail);
+        return Promise.resolve();
+    }
+    
+    try {
+        // Enviar notificación al propietario
+        await emailjs.send(
+            EMAIL_CONFIG.serviceId,
+            EMAIL_CONFIG.templateId,
+            {
+                user_email: AUTH_CONFIG.ownerEmail,
+                user_name: 'Gabriel',
+                message: `🔔 NUEVA SOLICITUD DE ACCESO AL CURRICULUM\n\n` +
+                        `Email solicitante: ${userEmail}\n` +
+                        `Fecha y hora: ${timestamp}\n\n` +
+                        `Un usuario ha solicitado acceso a tu curriculum privado.\n` +
+                        `Se le ha enviado un enlace mágico válido por 24 horas.\n\n` +
+                        `---\n` +
+                        `Sistema de notificación automática\n` +
+                        `Curriculum Privado - Gabriel Rivero Sampol`,
+                link: window.location.origin,
+                timestamp: timestamp
+            }
+        );
+        
+        console.log('✅ Notificación enviada al propietario');
+    } catch (error) {
+        console.error('❌ Error al notificar al propietario:', error);
+        // No bloqueamos el flujo aunque falle la notificación
+    }
 }
 
 // Sistema de notificaciones
