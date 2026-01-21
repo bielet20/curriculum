@@ -260,17 +260,19 @@ async function sendMagicLinkEmail(userEmail, magicLink) {
     console.log('%c🔑 ENLACE DE ACCESO (válido 24h):', 'font-size: 16px; font-weight: bold; color: #10b981;');
     console.log('%c' + magicLink, 'font-size: 14px; color: #6366f1; background: #f1f5f9; padding: 8px;');
     
+    // Si está en modo desarrollo, solo mostrar enlace y no enviar email
+    if (EMAIL_CONFIG && EMAIL_CONFIG.devMode) {
+        console.log('%c🔧 MODO DESARROLLO ACTIVADO', 'font-size: 14px; font-weight: bold; color: #f59e0b; background: #fef3c7; padding: 8px;');
+        console.log('ℹ️ No se enviará email real. Copia el enlace de arriba para acceder.');
+        console.log('ℹ️ Para activar envío de emails: configura la plantilla en EmailJS y cambia devMode a false');
+        return new Promise((resolve) => setTimeout(() => resolve({ status: 'dev_mode' }), 1000));
+    }
+    
     // Verificar si EmailJS está configurado
     if (typeof emailjs === 'undefined' || !EMAIL_CONFIG || EMAIL_CONFIG.publicKey === 'TU_PUBLIC_KEY_AQUI') {
         console.warn('⚠️ EmailJS no configurado. Usando solo modo consola.');
         console.warn('💡 Configura EmailJS en config-email.js para enviar emails reales');
-        if (EMAIL_CONFIG && EMAIL_CONFIG.devMode) {
-            // En modo desarrollo, solo mostrar y continuar
-            return new Promise((resolve) => setTimeout(resolve, 1000));
-        } else {
-            // En producción, lanzar error si no está configurado
-            throw new Error('EmailJS no está configurado. No se puede enviar el enlace.');
-        }
+        throw new Error('EmailJS no está configurado. No se puede enviar el enlace.');
     }
     
     // Parámetros para el email del USUARIO (quien solicita acceso)
