@@ -24,7 +24,7 @@ const EMAIL_CONFIG = {
     templateId: 'template_u11j9fj',
     
     // ID de plantilla para mensajes de contacto (puedes usar la misma o crear una nueva)
-    contactTemplateId: 'template_u11j9fj',
+    contactTemplateId: 'template_0ldnod9',
     
     // Email donde recibirás los mensajes
     toEmail: 'bielrivero@gmail.com',
