@@ -30,7 +30,8 @@ const EMAIL_CONFIG = {
     toEmail: 'bielrivero@gmail.com',
     
     // Modo desarrollo: si es true, solo muestra enlaces en consola
-    devMode: false
+    // Cambia a false cuando la plantilla de EmailJS esté configurada
+    devMode: true
 };
 
 // ========================================

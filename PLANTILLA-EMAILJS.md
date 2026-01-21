@@ -1,151 +1,195 @@
-# 📧 Configuración de Plantilla EmailJS para Mensajes de Contacto
+# 📧 Configuración de Plantillas EmailJS
 
-## 🎯 Configuración Actual
+## 🚨 IMPORTANTE: Dos Plantillas Diferentes
 
-Tu curriculum ahora enviará **automáticamente** todos los mensajes del formulario de contacto a: **bielrivero@gmail.com**
+Tu curriculum necesita **DOS tipos de emails diferentes**:
 
-## ✅ Plantilla Actual en EmailJS
+1. **📬 Magic Links** - Para enviar enlaces de acceso a los usuarios
+2. **💬 Mensajes de Contacto** - Para recibir mensajes del formulario
 
-Ya tienes configurado:
-- **Service ID**: `service_o2jjdf3`
-- **Template ID**: `template_u11j9fj`
-- **Email destino**: `bielrivero@gmail.com`
+---
 
-## 🔧 Cómo Configurar la Plantilla en EmailJS
+## 📬 PLANTILLA 1: Magic Links (Acceso al Curriculum)
 
-### Paso 1: Acceder a tu Plantilla
+### ¿Qué hace?
+Envía un enlace de acceso temporal a las personas que solicitan ver tu curriculum.
 
-1. Ve a [EmailJS Dashboard](https://dashboard.emailjs.com/)
-2. Inicia sesión con tu cuenta
-3. Ve a **Email Templates**
-4. Busca la plantilla `template_u11j9fj` o crea una nueva
+### Configuración en EmailJS
 
-### Paso 2: Configurar la Plantilla
+**Paso 1:** Ve a tu dashboard de EmailJS → Email Templates
 
-Edita tu plantilla con este contenido:
+**Paso 2:** Crea o edita la plantilla `template_u11j9fj`
+
+**Paso 3:** Configura estos campos:
+
+**To Email:** `{{to_email}}`  
+**Subject:** `Tu enlace de acceso al curriculum de Gabriel Rivero`
+
+**Contenido del email:**
 
 ```
-Para: {{user_email}}
-De: {{from_email}}
-Asunto: Nuevo mensaje de contacto - {{subject}}
+Hola {{user_name}},
 
+Has solicitado acceso al curriculum privado de Gabriel Rivero Sampol.
+
+Haz clic en el siguiente enlace para acceder:
+
+{{link}}
+
+⏱️ Este enlace es válido por 24 horas.
+📅 Fecha de solicitud: {{timestamp}}
+
+Si no solicitaste este acceso, puedes ignorar este email.
+
+---
+Gabriel Rivero Sampol
+📧 bielrivero@gmail.com
+📱 678 528 138
+```
+
+### Variables requeridas:
+- `{{to_email}}` - Email destino (quien recibe el enlace)
+- `{{user_name}}` - Nombre del usuario
+- `{{link}}` - El enlace mágico de acceso
+- `{{timestamp}}` - Fecha y hora de la solicitud
+- `{{message}}` - Mensaje completo (opcional)
+
+---
+
+## 💬 PLANTILLA 2: Mensajes de Contacto
+
+### ¿Qué hace?
+Te envía a ti (bielrivero@gmail.com) los mensajes que te envían desde el formulario de contacto.
+
+### Configuración
+
+Puedes usar la misma plantilla o crear una nueva llamada `template_contacto`
+
+**To Email:** `{{user_email}}`  
+**Reply To:** `{{from_email}}`  
+**Subject:** `Nuevo mensaje de contacto - {{subject}}`
+
+**Contenido del email:**
+
+```
+📬 NUEVO MENSAJE DE CONTACTO
+
+De: {{from_name}}
+Email: {{from_email}}
+Asunto: {{subject}}
+
+Mensaje:
 {{message}}
 
 ---
-Enviado el: {{timestamp}}
+Enviado desde tu curriculum web el {{timestamp}}
 ```
 
-### Paso 3: Variables que debe incluir la plantilla
-
-Asegúrate de que tu plantilla use estas variables (con dobles llaves):
-
-- `{{user_email}}` - Tu email donde recibirás los mensajes (bielrivero@gmail.com)
-- `{{from_name}}` - Nombre de quien envía el mensaje
-- `{{from_email}}` - Email de quien envía el mensaje
+### Variables requeridas:
+- `{{user_email}}` - Tu email (bielrivero@gmail.com)
+- `{{from_name}}` - Nombre del remitente
+- `{{from_email}}` - Email del remitente
 - `{{subject}}` - Asunto del mensaje
-- `{{message}}` - Contenido completo del mensaje
-- `{{timestamp}}` - Fecha y hora del envío
+- `{{message}}` - Contenido del mensaje
+- `{{timestamp}}` - Fecha y hora
 
-### Paso 4: Verificar Servicio de Email
+---
 
-1. Ve a **Email Services** en EmailJS
-2. Verifica que el servicio `service_o2jjdf3` esté conectado
-3. Asegúrate de que el email asociado sea el correcto
+## ✅ Checklist de Configuración
+
+### Para Magic Links:
+- [ ] Plantilla creada en EmailJS
+- [ ] Campo `To Email` configurado como `{{to_email}}`
+- [ ] Variables `{{link}}`, `{{user_name}}`, `{{timestamp}}` en el contenido
+- [ ] Template ID correcto en [config-email.js](config-email.js)
+- [ ] Servicio de email conectado (Gmail, Outlook, etc.)
+
+### Para Mensajes de Contacto:
+- [ ] Plantilla creada (puede ser la misma)
+- [ ] Campo `To Email` configurado como `{{user_email}}`
+- [ ] Variables `{{from_name}}`, `{{from_email}}`, `{{message}}` en el contenido
+- [ ] `contactTemplateId` configurado en [config-email.js](config-email.js)
+
+---
+
+## 🔧 Activar el Sistema
+
+Una vez configuradas las plantillas:
+
+1. Ve a [config-email.js](config-email.js)
+2. Cambia `devMode: true` a `devMode: false`
+3. Guarda el archivo
+4. Reconstruye el contenedor:
+   ```bash
+   docker-compose down && docker-compose up -d --build
+   ```
+
+---
 
 ## 🧪 Probar el Sistema
 
-1. Abre tu curriculum: http://localhost:8081
-2. Accede con tu email
-3. Ve a la sección de Contacto
-4. Completa el formulario:
-   - **Nombre**: Prueba Test
-   - **Email**: test@example.com
-   - **Asunto**: Prueba de sistema
-   - **Mensaje**: Este es un mensaje de prueba
-5. Haz clic en "Enviar Mensaje"
-6. Deberías ver:
-   - ✅ Mensaje de éxito en la web
-   - 📧 Email en tu bandeja de entrada (bielrivero@gmail.com)
-   - 💬 Notificación en pantalla
+### Probar Magic Links:
+1. Ve a http://localhost:8081
+2. Introduce un email de prueba
+3. Revisa la consola del navegador (F12)
+4. Si `devMode: true` → verás el enlace en consola
+5. Si `devMode: false` → recibirás email real
 
-## 📋 Ejemplo de Plantilla Mejorada (Opcional)
+### Probar Mensajes de Contacto:
+1. Accede al curriculum
+2. Ve a la sección "Contacto"
+3. Envía un mensaje
+4. Deberías recibir el email en bielrivero@gmail.com
 
-Para una mejor presentación, puedes usar este HTML en tu plantilla:
-
-```html
-<!DOCTYPE html>
-<html>
-<head>
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: #6366f1; color: white; padding: 20px; border-radius: 5px 5px 0 0; }
-        .content { background: #f9fafb; padding: 20px; border: 1px solid #e5e7eb; }
-        .footer { background: #f3f4f6; padding: 15px; text-align: center; font-size: 12px; color: #6b7280; }
-        .label { font-weight: bold; color: #6366f1; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h2>📬 Nuevo Mensaje de Contacto</h2>
-        </div>
-        <div class="content">
-            <p><span class="label">De:</span> {{from_name}}</p>
-            <p><span class="label">Email:</span> {{from_email}}</p>
-            <p><span class="label">Asunto:</span> {{subject}}</p>
-            <hr>
-            <p><span class="label">Mensaje:</span></p>
-            <p>{{message}}</p>
-        </div>
-        <div class="footer">
-            Enviado desde tu curriculum web el {{timestamp}}
-        </div>
-    </div>
-</body>
-</html>
-```
+---
 
 ## 🔍 Solución de Problemas
 
 ### ❌ Error 422: Unprocessable Entity
 
-**Causa**: La plantilla no tiene las variables correctas
-**Solución**: 
-1. Revisa que las variables en la plantilla coincidan exactamente
-2. Verifica que uses `{{}}` (dobles llaves) para las variables
-3. Asegúrate de que el Template ID sea correcto
+**Causa:** La plantilla no tiene las variables correctas o el email destino está mal configurado.
 
-### ❌ Los mensajes no llegan
+**Solución Magic Links:**
+1. Verifica que el campo "To Email" sea `{{to_email}}` (NO `{{user_email}}`)
+2. Asegúrate de que todas las variables tengan dobles llaves: `{{}}`
+3. Revisa que el Template ID sea correcto
 
-**Comprueba**:
-1. ✅ El servicio de email está conectado en EmailJS
-2. ✅ La plantilla está publicada (no en borrador)
-3. ✅ Tu cuenta de EmailJS no ha superado el límite de 200 emails/mes
-4. 🗂️ Revisa la carpeta de SPAM
+**Solución Contacto:**
+1. El campo "To Email" debe ser `{{user_email}}` 
+2. Verifica las variables `{{from_name}}`, `{{from_email}}`, `{{message}}`
 
-### 📊 Ver mensajes enviados
+### 📧 Los emails no llegan
 
-1. Ve a EmailJS Dashboard
-2. Sección **History**
-3. Verás todos los emails enviados desde tu cuenta
+1. Verifica en EmailJS Dashboard → History si se enviaron
+2. Revisa la carpeta de SPAM
+3. Confirma que el servicio de email esté conectado
+4. Verifica que no hayas superado el límite (200 emails/mes gratis)
 
-## 🎨 Modo Desarrollo
+### 🔐 No puedo acceder aunque solicite el enlace
 
-Si quieres probar sin enviar emails reales, cambia en [config-email.js](config-email.js):
-
-```javascript
-devMode: true  // Solo muestra en consola, no envía emails
-```
-
-## 📱 Contacto de Respaldo
-
-Si EmailJS falla, los mensajes se guardan localmente en el navegador. Puedes verlos en la consola con:
-
-```javascript
-localStorage.getItem('contact_messages')
-```
+1. Abre la consola del navegador (F12)
+2. El enlace siempre se muestra en consola aunque falle el email
+3. Copia el enlace completo y pégalo en el navegador
 
 ---
 
-**✅ Una vez configurada la plantilla, todos los mensajes del formulario se enviarán automáticamente a bielrivero@gmail.com**
+## 📊 Ver Estado de Envíos
+
+En la consola del navegador verás:
+- ✅ Email enviado correctamente
+- ❌ Error al enviar (con detalles)
+- 🔑 Enlace mágico (siempre visible en desarrollo)
+
+En EmailJS Dashboard:
+- History → Ver todos los emails enviados
+- Usage → Ver cuántos emails quedan
+
+---
+
+## 🎯 Configuración Actual
+
+- **Service ID:** `service_o2jjdf3`
+- **Template Magic Links:** `template_u11j9fj`
+- **Template Contacto:** `template_u11j9fj` (misma plantilla por ahora)
+- **Email destino:** `bielrivero@gmail.com`
+- **Modo:** `devMode: true` (cambiar a `false` cuando esté configurado)

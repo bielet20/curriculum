@@ -262,21 +262,30 @@ async function sendMagicLinkEmail(userEmail, magicLink) {
     
     // Verificar si EmailJS está configurado
     if (typeof emailjs === 'undefined' || !EMAIL_CONFIG || EMAIL_CONFIG.publicKey === 'TU_PUBLIC_KEY_AQUI') {
-        console.warn('EmailJS no configurado. Usando solo modo consola.');
-        return new Promise((resolve) => setTimeout(resolve, 1000));
+        console.warn('⚠️ EmailJS no configurado. Usando solo modo consola.');
+        console.warn('💡 Configura EmailJS en config-email.js para enviar emails reales');
+        if (EMAIL_CONFIG && EMAIL_CONFIG.devMode) {
+            // En modo desarrollo, solo mostrar y continuar
+            return new Promise((resolve) => setTimeout(resolve, 1000));
+        } else {
+            // En producción, lanzar error si no está configurado
+            throw new Error('EmailJS no está configurado. No se puede enviar el enlace.');
+        }
     }
     
-    // Parámetros estándar de EmailJS
+    // Parámetros para el email del USUARIO (quien solicita acceso)
     const templateParams = {
-        user_email: userEmail,
+        to_email: userEmail,           // Email DESTINO (quien recibe)
+        user_email: userEmail,         // Email del usuario
         user_name: userEmail.split('@')[0],
+        subject: 'Tu enlace de acceso al curriculum - Válido 24 horas',
         message: `¡Hola!\n\nHas solicitado acceso al curriculum privado de Gabriel Rivero Sampol.\n\nHaz clic en el siguiente enlace para acceder:\n\n${magicLink}\n\n⏱️ Este enlace es válido por 24 horas.\n📅 Fecha de solicitud: ${timestamp}\n\nSi no solicitaste este acceso, puedes ignorar este email.\n\n---\nGabriel Rivero Sampol\n📧 bielrivero@gmail.com\n📱 678 528 138`,
         link: magicLink,
         timestamp: timestamp
     };
     
-    console.log('📧 Enviando email a:', userEmail);
-    console.log('📋 Parámetros:', { ...templateParams, message: '[mensaje largo...]' });
+    console.log('📧 Enviando enlace mágico a:', userEmail);
+    console.log('📋 Parámetros del email:', { to_email: userEmail, link: '[enlace...]', timestamp });
     
     try {
         // Enviar con EmailJS
@@ -285,18 +294,27 @@ async function sendMagicLinkEmail(userEmail, magicLink) {
             EMAIL_CONFIG.templateId,
             templateParams
         );
-        console.log('✅ Email enviado correctamente:', response);
-        console.log('✉️ El usuario', userEmail, 'debería recibir el email en breve');
+        console.log('✅ Enlace mágico enviado correctamente a:', userEmail);
+        console.log('📬 Respuesta EmailJS:', response);
         return response;
     } catch (error) {
-        console.error('❌ Error al enviar email:', error);
-        console.warn('⚠️ Modo desarrollo: EmailJS no configurado correctamente');
-        console.warn('⚠️ Revisa que el template "' + EMAIL_CONFIG.templateId + '" exista en EmailJS');
-        console.log('📋 Usa estos parámetros en tu template: user_email, user_name, message, link, timestamp');
+        console.error('❌ Error al enviar email a', userEmail, ':', error);
+        console.error('📋 Detalles del error:', error.text || error.message);
+        console.warn('⚠️ Verifica:');
+        console.warn('   1. Service ID:', EMAIL_CONFIG.serviceId);
+        console.warn('   2. Template ID:', EMAIL_CONFIG.templateId);
+        console.warn('   3. Que la plantilla tenga los campos: to_email, user_email, message, link');
         console.log('');
-        console.log('💡 El enlace mágico se ha mostrado arriba ↑ Cópialo para acceder.');
-        // No lanzar error en modo desarrollo
-        return { status: 'dev_mode', message: 'Enlace generado en consola' };
+        console.log('💡 El enlace mágico se muestra arriba ↑ Puedes copiarlo manualmente.');
+        
+        // Si estamos en modo desarrollo, no fallar
+        if (EMAIL_CONFIG && EMAIL_CONFIG.devMode) {
+            console.log('🔧 Modo desarrollo: continuando sin enviar email...');
+            return { status: 'dev_mode', message: 'Enlace generado en consola' };
+        }
+        
+        // En producción, lanzar el error para que el usuario sepa que falló
+        throw error;
     }
 }
 
