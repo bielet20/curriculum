@@ -434,6 +434,12 @@ async function notifyOwnerNewRequest(userEmail) {
         timeStyle: 'short'
     });
     
+    // Si está en modo desarrollo, no enviar notificación al owner
+    if (EMAIL_CONFIG && EMAIL_CONFIG.devMode) {
+        console.log('🔧 Modo desarrollo: Notificación al owner omitida para:', userEmail);
+        return Promise.resolve();
+    }
+    
     // Verificar si EmailJS está configurado
     if (typeof emailjs === 'undefined' || !EMAIL_CONFIG || EMAIL_CONFIG.publicKey === 'TU_PUBLIC_KEY_AQUI') {
         console.log('📧 Notificación al owner (EmailJS no configurado):', userEmail);
