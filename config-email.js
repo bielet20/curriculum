@@ -31,7 +31,7 @@ const EMAIL_CONFIG = {
     
     // Modo desarrollo: si es true, solo muestra enlaces en consola
     // Cambia a false cuando la plantilla de EmailJS esté configurada
-    devMode: true
+    devMode: false
 };
 
 // ========================================
