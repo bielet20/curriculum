@@ -287,7 +287,9 @@ async function sendMagicLinkEmail(userEmail, magicLink) {
     };
     
     console.log('📧 Enviando enlace mágico a:', userEmail);
-    console.log('📋 Parámetros del email:', { to_email: userEmail, link: '[enlace...]', timestamp });
+    console.log('📋 Parámetros del email:');
+    console.table(templateParams);
+    console.log('JSON:', JSON.stringify(templateParams, null, 2));
     
     try {
         // Enviar con EmailJS
