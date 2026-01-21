@@ -5,7 +5,7 @@ services:
     build: .
     container_name: curriculum-gabriel-rivero
     ports:
-      - "8080:80"
+      - "8081:80"
     restart: unless-stopped
     volumes:
       # Opcional: montar archivos para desarrollo sin reconstruir

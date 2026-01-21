@@ -20,11 +20,17 @@ const EMAIL_CONFIG = {
     // ID de tu servicio de email
     serviceId: 'service_o2jjdf3',
     
-    // ID de tu plantilla (usa el mismo para ambos por ahora)
+    // ID de tu plantilla para acceso con magic link
     templateId: 'template_u11j9fj',
     
+    // ID de plantilla para mensajes de contacto (puedes usar la misma o crear una nueva)
+    contactTemplateId: 'template_u11j9fj',
+    
     // Email donde recibirás los mensajes
-    toEmail: 'bielrivero@gmail.com'
+    toEmail: 'bielrivero@gmail.com',
+    
+    // Modo desarrollo: si es true, solo muestra enlaces en consola
+    devMode: false
 };
 
 // ========================================

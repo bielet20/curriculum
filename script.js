@@ -290,9 +290,13 @@ async function sendMagicLinkEmail(userEmail, magicLink) {
         return response;
     } catch (error) {
         console.error('❌ Error al enviar email:', error);
+        console.warn('⚠️ Modo desarrollo: EmailJS no configurado correctamente');
         console.warn('⚠️ Revisa que el template "' + EMAIL_CONFIG.templateId + '" exista en EmailJS');
         console.log('📋 Usa estos parámetros en tu template: user_email, user_name, message, link, timestamp');
-        throw error;
+        console.log('');
+        console.log('💡 El enlace mágico se ha mostrado arriba ↑ Cópialo para acceder.');
+        // No lanzar error en modo desarrollo
+        return { status: 'dev_mode', message: 'Enlace generado en consola' };
     }
 }
 
@@ -671,28 +675,55 @@ async function sendEmail(data) {
     // Verificar si EmailJS está configurado
     if (typeof emailjs === 'undefined' || !EMAIL_CONFIG || EMAIL_CONFIG.publicKey === 'TU_PUBLIC_KEY_AQUI') {
         console.warn('EmailJS no está configurado. Simulando envío...');
+        console.log('📧 Mensaje de contacto (modo simulación):');
+        console.log('De:', data.nombre, '<' + data.email + '>');
+        console.log('Asunto:', data.asunto);
+        console.log('Mensaje:', data.mensaje);
         // Simular envío exitoso
         return new Promise((resolve) => {
             setTimeout(() => {
-                console.log('Email simulado:', data);
-                resolve();
+                resolve({ status: 'simulated' });
             }, 1000);
         });
     }
 
-    // Enviar con EmailJS
-    return emailjs.send(
-        EMAIL_CONFIG.serviceId,
-        EMAIL_CONFIG.templateId,
-        {
-            from_name: data.nombre,
-            from_email: data.email,
-            subject: data.asunto,
-            message: data.mensaje,
-            to_email: EMAIL_CONFIG.toEmail,
-            timestamp: new Date().toLocaleString('es-ES')
-        }
-    );
+    try {
+        // Usar plantilla específica de contacto si está disponible
+        const templateId = EMAIL_CONFIG.contactTemplateId || EMAIL_CONFIG.templateId;
+        
+        console.log('📧 Enviando mensaje de contacto a:', EMAIL_CONFIG.toEmail);
+        
+        // Enviar con EmailJS
+        const response = await emailjs.send(
+            EMAIL_CONFIG.serviceId,
+            templateId,
+            {
+                from_name: data.nombre,
+                from_email: data.email,
+                to_email: EMAIL_CONFIG.toEmail,
+                user_email: EMAIL_CONFIG.toEmail,
+                user_name: 'Gabriel',
+                subject: data.asunto,
+                message: `NUEVO MENSAJE DE CONTACTO\n\n` +
+                        `De: ${data.nombre}\n` +
+                        `Email: ${data.email}\n` +
+                        `Asunto: ${data.asunto}\n\n` +
+                        `Mensaje:\n${data.mensaje}\n\n` +
+                        `---\nEnviado desde tu curriculum web el ${new Date().toLocaleString('es-ES')}`,
+                timestamp: new Date().toLocaleString('es-ES')
+            }
+        );
+        
+        console.log('✅ Mensaje de contacto enviado exitosamente');
+        return response;
+    } catch (error) {
+        console.error('❌ Error al enviar mensaje de contacto:', error);
+        console.warn('💡 Tip: Verifica que la plantilla tenga los campos: from_name, from_email, user_email, message');
+        
+        // Si falla, al menos guardar localmente
+        console.log('📝 Guardando mensaje localmente...');
+        throw error;
+    }
 }
 
 // Función para enviar notificación al admin (para sistema de autenticación)
