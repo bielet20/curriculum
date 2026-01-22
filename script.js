@@ -55,14 +55,23 @@ function checkAuthentication() {
         const expirationTime = new Date(sessionData.expiration).getTime();
         const currentTime = new Date().getTime();
         
+        console.log('🔍 Verificando sesión existente:');
+        console.log('   Email:', sessionData.email);
+        console.log('   Expira:', new Date(expirationTime).toLocaleString('es-ES'));
+        console.log('   Ahora:', new Date(currentTime).toLocaleString('es-ES'));
+        
         if (currentTime < expirationTime) {
+            const hoursRemaining = ((expirationTime - currentTime) / (1000 * 60 * 60)).toFixed(2);
+            console.log('✅ Sesión válida (expira en', hoursRemaining, 'horas)');
             return true;
         } else {
             // Sesión expirada
+            console.warn('❌ Sesión EXPIRADA');
             localStorage.removeItem(AUTH_CONFIG.sessionKey);
             return false;
         }
     } catch (error) {
+        console.error('❌ Error al verificar sesión:', error);
         localStorage.removeItem(AUTH_CONFIG.sessionKey);
         return false;
     }
@@ -73,21 +82,40 @@ function validateToken(token) {
     try {
         // Decodificar token (formato: email|timestamp|hash)
         const parts = atob(token).split('|');
-        if (parts.length !== 3) return false;
+        if (parts.length !== 3) {
+            console.warn('⚠️ Token inválido: formato incorrecto');
+            return false;
+        }
         
         const [email, timestamp, hash] = parts;
         const tokenTime = parseInt(timestamp);
         const currentTime = new Date().getTime();
+        const tokenAge = currentTime - tokenTime;
+        const tokenAgeHours = (tokenAge / (1000 * 60 * 60)).toFixed(2);
+        
+        console.log('🔍 Validando token:');
+        console.log('   Email:', email);
+        console.log('   Creado:', new Date(tokenTime).toLocaleString('es-ES'));
+        console.log('   Antigüedad:', tokenAgeHours, 'horas');
+        console.log('   Límite:', (AUTH_CONFIG.tokenDuration / (1000 * 60 * 60)), 'horas');
         
         // Verificar que no haya expirado (24 horas)
-        if (currentTime - tokenTime > AUTH_CONFIG.tokenDuration) {
+        if (tokenAge > AUTH_CONFIG.tokenDuration) {
+            console.error('❌ Token EXPIRADO (antigüedad:', tokenAgeHours, 'horas)');
             return false;
         }
         
         // Verificar hash (simple validación)
         const expectedHash = generateHash(email + timestamp);
-        return hash === expectedHash;
+        if (hash !== expectedHash) {
+            console.error('❌ Token INVÁLIDO: hash no coincide');
+            return false;
+        }
+        
+        console.log('✅ Token VÁLIDO (expira en', (24 - parseFloat(tokenAgeHours)).toFixed(2), 'horas)');
+        return true;
     } catch (error) {
+        console.error('❌ Error al validar token:', error);
         return false;
     }
 }
